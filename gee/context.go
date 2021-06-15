@@ -12,17 +12,23 @@ type Context struct {
 	Writer http.ResponseWriter // origin objects
 	Req    *http.Request       // origin objects
 
-	Path   string // request info
-	Method string // request info
+	Path   string            // request info
+	Method string            // request info
+	Params map[string]string // request info
 
 	StatusCode int // response info
+}
+
+func (c *Context) Param(key string) string {
+	value, _ := c.Params[key]
+	return value
 }
 
 func newContext(w http.ResponseWriter, req *http.Request) *Context {
 	return &Context{
 		Writer: w,
-		Req: req,
-		Path: req.URL.Path,
+		Req:    req,
+		Path:   req.URL.Path,
 		Method: req.Method,
 	}
 }
@@ -48,7 +54,7 @@ func (c *Context) SetHeader(key string, value string) {
 }
 
 // String sends an HTTP response with the provided text info in byte stream
-func (c *Context) String (code int, format string, values ...interface{}) {
+func (c *Context) String(code int, format string, values ...interface{}) {
 	c.SetHeader("Content-Type", "text/plain")
 	c.Status(code)
 	c.Writer.Write([]byte(fmt.Sprintf(format, values...)))
@@ -59,7 +65,7 @@ func (c *Context) JSON(code int, obj interface{}) {
 	c.SetHeader("Content-Type", "application/json")
 	c.Status(code)
 	encoder := json.NewEncoder(c.Writer)
-	if err:= encoder.Encode(obj); err != nil {
+	if err := encoder.Encode(obj); err != nil {
 		http.Error(c.Writer, err.Error(), 500)
 	}
 }
@@ -76,9 +82,3 @@ func (c *Context) HTML(code int, html string) {
 	c.Status(code)
 	c.Writer.Write([]byte(html))
 }
-
-
-
-
-
-
