@@ -17,6 +17,9 @@ type Context struct {
 	Params map[string]string // request info
 
 	StatusCode int // response info
+
+	handlers []HandlerFunc // middleware
+	index    int
 }
 
 func (c *Context) Param(key string) string {
@@ -30,7 +33,13 @@ func newContext(w http.ResponseWriter, req *http.Request) *Context {
 		Req:    req,
 		Path:   req.URL.Path,
 		Method: req.Method,
+		index:  -1,
 	}
+}
+
+func (c *Context) Fail(code int, err string) {
+	c.index = len(c.handlers)
+	c.JSON(code, H{"message": err})
 }
 
 // PostForm returns the first value for the named component of the query
@@ -82,3 +91,14 @@ func (c *Context) HTML(code int, html string) {
 	c.Status(code)
 	c.Writer.Write([]byte(html))
 }
+
+// Next executes the next middleware
+func (c *Context) Next() {
+	c.index++
+	s := len(c.handlers)
+	for ; c.index < s; c.index++ {
+		c.handlers[c.index](c)
+	}
+}
+
+
