@@ -29,20 +29,20 @@ func main() {
 
 	stu1 := &student{Name: "Sean", Age: 18}
 	stu2 := &student{Name: "Alex", Age: 20}
-	r.GET("/", func(c *gee.Context){
+	r.GET("/", func(c *gee.Context) {
 		c.HTML(http.StatusOK, "css.tmpl", nil)
 	})
-	r.GET("/students", func(c *gee.Context){
+	r.GET("/students", func(c *gee.Context) {
 		c.HTML(http.StatusOK, "arr.tmpl", gee.H{
-			"title": "gee",
+			"title":  "gee",
 			"stuArr": [2]*student{stu1, stu2},
 		})
 	})
 
-	r.GET("/date", func( c *gee.Context){
+	r.GET("/date", func(c *gee.Context) {
 		c.HTML(http.StatusOK, "custom_func.tmpl", gee.H{
 			"title": "gee",
-			"now": time.Date(2021, 6, 16, 15, 30, 0, 0, time.UTC),
+			"now":   time.Date(2021, 6, 16, 15, 30, 0, 0, time.UTC),
 		})
 	})
 
