@@ -15,4 +15,3 @@ func Logger() HandlerFunc {
 		log.Printf("[%d] %s in %v", c.StatusCode, c.Req.RequestURI, time.Since(t))
 	}
 }
-

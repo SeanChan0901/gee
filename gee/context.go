@@ -20,6 +20,8 @@ type Context struct {
 
 	handlers []HandlerFunc // middleware
 	index    int
+
+	engine *Engine // engine pointer
 }
 
 func (c *Context) Param(key string) string {
@@ -86,10 +88,12 @@ func (c *Context) Data(code int, data []byte) {
 }
 
 // HTML sends an HTTP response with the provide html info in byte stream
-func (c *Context) HTML(code int, html string) {
+func (c *Context) HTML(code int, name string, data interface{}) {
 	c.SetHeader("Content-Type", "text/html")
 	c.Status(code)
-	c.Writer.Write([]byte(html))
+	if err := c.engine.htmlTemplates.ExecuteTemplate(c.Writer, name, data); err != nil {
+		c.Fail(500, err.Error())
+	}
 }
 
 // Next executes the next middleware
@@ -100,5 +104,3 @@ func (c *Context) Next() {
 		c.handlers[c.index](c)
 	}
 }
-
-

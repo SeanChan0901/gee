@@ -37,7 +37,6 @@ func TestGetRoute(t *testing.T) {
 		t.Fatal("should match /hello/:name")
 	}
 
-
 	if ps["name"] != "gee-web" {
 		t.Fatal("name should be equal to gee-web")
 	}
